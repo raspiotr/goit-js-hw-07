@@ -3,7 +3,7 @@ import { galleryItems } from "./gallery-items.js";
 
 console.log(galleryItems);
 
-const galleryMarkup = galleryItems.map((item) => {
+function createGalleryElement(item) {
   const imgElement = document.createElement("img");
   imgElement.classList.add("gallery__image");
   imgElement.setAttribute("src", item.preview);
@@ -15,7 +15,11 @@ const galleryMarkup = galleryItems.map((item) => {
   const listElement = document.createElement("li");
   listElement.prepend(linkElement);
   return listElement;
-});
+}
+
+const galleryMarkup = galleryItems.map((picture) =>
+  createGalleryElement(picture)
+);
 
 const gallery = document.querySelector(".gallery");
 gallery.prepend(...galleryMarkup);

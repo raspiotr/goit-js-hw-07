@@ -3,7 +3,7 @@ import { galleryItems } from "./gallery-items.js";
 
 console.log(galleryItems);
 
-const galleryMarkup = galleryItems.map((item) => {
+function createGalleryElement(item) {
   const imgElement = document.createElement("img");
   imgElement.classList.add("gallery__image");
   imgElement.setAttribute("src", item.preview);
@@ -13,40 +13,38 @@ const galleryMarkup = galleryItems.map((item) => {
   linkElement.prepend(imgElement);
   linkElement.classList.add("gallery__link");
   linkElement.setAttribute("href", item.original);
-  const divElement = document.createElement("div");
-  divElement.prepend(linkElement);
-  divElement.classList.add("gallery__item");
   const listElement = document.createElement("li");
-  listElement.prepend(divElement);
+  listElement.prepend(linkElement);
+  listElement.classList.add("gallery__item");
   return listElement;
-});
+}
+
+const galleryMarkup = galleryItems.map((picture) =>
+  createGalleryElement(picture)
+);
 
 const gallery = document.querySelector(".gallery");
 gallery.prepend(...galleryMarkup);
 
-let imgModal;
-let isModalOpen = false;
-
 function createImgModal(event) {
+  event.preventDefault();
   if (event.target.nodeName !== "IMG") {
     return;
   }
-  event.preventDefault();
   //console.log(event.target.dataset.source);
-  imgModal = basicLightbox.create(`
+  const imgModal = basicLightbox.create(`
     <img src="${event.target.dataset.source}" width="1280">
 `);
   imgModal.show();
-  isModalOpen = true;
+
+  function handleEscape(event) {
+    if (event.key === "Escape") {
+      imgModal.close();
+      document.removeEventListener("keydown", handleEscape);
+    }
+  }
+
+  document.addEventListener("keydown", handleEscape);
 }
 
 gallery.addEventListener("click", createImgModal);
-
-function handleEscapeKey(event) {
-  if (isModalOpen && event.key === "Escape") {
-    imgModal.close();
-    isModalOpen = false;
-  }
-}
-
-document.addEventListener("keydown", handleEscapeKey);
